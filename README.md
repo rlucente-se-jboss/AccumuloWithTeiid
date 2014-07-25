@@ -1,7 +1,7 @@
 AccumuloWithTeiid
 =================
 
-Simple project demonstrating accessing Accumulo with Teiid
+Simple project demonstrating accessing Accumulo with Teiid.  The scripts automate the installation and setup of Hadoop, Zookeeper, Accumulo, and Teiid as described in this [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
 Install Accumulo and Launch
 ---------------------------

@@ -1,5 +1,4 @@
-This directory should contain the following files downloaded from
-these URLs:
+This directory should contain the files downloaded from these URLs:
 
     http://apache.cs.utah.edu/accumulo/1.6.0/accumulo-1.6.0-bin.tar.gz
     http://www.gtlib.gatech.edu/pub/apache//commons/logging/binaries/commons-logging-1.2-bin.tar.gz

@@ -14,4 +14,7 @@ PUSHD ${WORK_DIR}
 
     # start the accumulo datastore
     testing/accumulo-${VER_ACCUMULO}/bin/start-all.sh
+
+    # start data virtualization
+    testing/jboss-eap-${VER_EAP_INST}/bin/standalone.sh -c standalone-teiid.xml &
 POPD

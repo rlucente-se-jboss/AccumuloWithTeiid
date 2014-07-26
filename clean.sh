@@ -6,5 +6,5 @@
 pkill java -u ${USER}
 
 # clean up installation
-rm -fr testing
+rm -fr testing importdata
 

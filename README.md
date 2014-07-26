@@ -55,33 +55,31 @@ To start and stop Accumulo after it is installed, simply use the commands:
     ./start.sh
     ./stop.sh
 
-Configure JBDS 7.1.1
---------------------
+Test the Installation
+---------------------
 
-To do this example, you'll need Teiid Designer 8.5 which includes support
-for Accumulo.  That release requires additional dependencies.
+Instead of using the Teiid Designer, the install.sh script follows step 2 option 2
+in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
-First, install the current Teiid Designer tooling by selecting the
-"Software/Update" on the "JBoss Central" pane.  Select the "JBoss
-Data Virtualization Development" and click the "Install" button.
-Select "Next>" and accept the defaults including the license agreement.
-Restart JBDS when prompted.
+The install.sh script uses an EAP command-line interface script to
+deploy the necessary resource adapters and register them with JNDI.
+It then deploys a dynamic vdb enabling access to both the file view
+and the accumulo view.  A Teiid user is configured in the application
+security realm with the name and password of:
 
-Select "Help->Install New Software...".  Click the "Add..." button and
-put the BIRT Update Site URL into the Location field:
+    user/user1jboss!
 
-    http://download.eclipse.org/birt/update-site/4.3
+This user has both the user and the odata roles so the odata server
+features of Teiid can be used to confirm that everything is working
+properly.  To do this, open Firefox and browse to the URLs:
 
-Select the "BIRT 4.3 Reporting SDK" and select the "Next>" button.
-Select defaults and accept the license to install the tooling.
-Restart JBDS when prompted.
+    http://localhost:8080/babynames/file.babies?$format=json
+    http://localhost:8080/babynames/accumulo.babies?$format=json
 
-Select "Help->Install New Software...".  Click the "Add..." button and
-put the Teiid Designer URL into the Location field:
+The URL follows the pattern:
 
-    http://download.jboss.org/jbosstools/updates/release/kepler/integration-stack/teiiddesigner/8.5.0.Final/
+    http://<server>:<port>/<vdb-name>/<model>.<table>
 
-Select the "Teiid Designer" and select the "Next>" button.  Select
-defaults and accept the license to install the tooling.  Restart JBDS
-when prompted.
+The optional format directive renders the output as json.  For the above
+URLs, the file model will have data and accumulo will be empty.
 

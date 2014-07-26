@@ -1,0 +1,25 @@
+batch
+
+#
+# create the file datasource to import the SSA baby name data
+#
+
+/subsystem=resource-adapters/resource-adapter=file-ds:add(transaction-support=NoTransaction,module=org.jboss.teiid.resource-adapter.file)
+/subsystem=resource-adapters/resource-adapter=file-ds/connection-definitions=file-ds:add(class-name=org.teiid.resource.adapter.file.FileManagedConnectionFactory,jndi-name=java:/file-ds)
+/subsystem=resource-adapters/resource-adapter=file-ds/connection-definitions=file-ds/config-properties=ParentDirectory:add(value=/home/rlucente/git/AccumuloWithTeiid/importdata)
+/subsystem=resource-adapters/resource-adapter=file-ds:activate
+
+#
+# create the Accumulo datasource to insert and query the SSA baby name data
+#
+
+/subsystem=resource-adapters/resource-adapter=accumulo-ds:add(transaction-support=NoTransaction,module=org.jboss.teiid.resource-adapter.accumulo)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds/connection-definitions=teiid-accumulo-ds:add(class-name=org.teiid.resource.adapter.accumulo.AccumuloManagedConnectionFactory,jndi-name=java:/accumulo-ds)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds/connection-definitions=teiid-accumulo-ds/config-properties=ZooKeeperServerList:add(value=localhost:2181)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds/connection-definitions=teiid-accumulo-ds/config-properties=InstanceName:add(value=teiid)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds/connection-definitions=teiid-accumulo-ds/config-properties=Username:add(value=root)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds/connection-definitions=teiid-accumulo-ds/config-properties=Password:add(value=changeme)
+/subsystem=resource-adapters/resource-adapter=accumulo-ds:activate
+                       
+run-batch
+

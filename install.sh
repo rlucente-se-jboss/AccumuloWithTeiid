@@ -317,4 +317,16 @@ EOF8
     mv accumulo-babies-vdb.xml testing/jboss-eap-${VER_EAP_INST}/standalone/deployments
     touch testing/jboss-eap-${VER_EAP_INST}/standalone/deployments/accumulo-babies-vdb.xml.dodeploy
 
+    # install SQuirreL SQL Client
+    squirrel_home=${WORK_DIR}/testing/squirrel-sql-${VER_SQUIRREL}
+    sed -i "s!\(<installpath>\)..*\(</installpath>\)!\1$squirrel_home\2!g" squirrel-sql.xml
+
+    java -jar ${DIST_DIR}/squirrel-sql-${VER_SQUIRREL}-standard.jar squirrel-sql.xml
+
+    # add the Teiid driver client jars to the SQuirreL client
+    PUSHD ${squirrel_home}/lib
+        teiid_modules_dir=${WORK_DIR}/testing/jboss-eap-${VER_EAP_INST}/modules/system/layers/base/org/jboss/teiid
+        ln -s ${teiid_modules_dir}/common-core/main/teiid-common-core-${VER_TEIID}.jar .
+        ln -s ${teiid_modules_dir}/client/main/teiid-client-${VER_TEIID}.jar .
+    POPD
 POPD

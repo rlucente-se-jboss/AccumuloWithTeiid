@@ -6,11 +6,8 @@ The scripts automate the installation and setup of Hadoop,
 Zookeeper, Accumulo, and Teiid as described in this
 [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
-After running the installation script, you can
-skip to the third bullet under Step 2 Option 1 in the
-[article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).  This
-project updates the versions of the various components.  Specifically,
-this now uses:
+This project updates the versions of the various components.
+Specifically, this now uses:
 
 * Accumulo 1.6.0
 * Commons Logging 1.2

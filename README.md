@@ -50,6 +50,9 @@ the install.sh script.  To install:
     ./clean.sh
     ./install.sh
 
+Wait for a console message stating that accumulo-babies-vdb.xml has
+been deployed.
+
 To start and stop Accumulo after it is installed, simply use the commands:
 
     ./start.sh
@@ -58,8 +61,8 @@ To start and stop Accumulo after it is installed, simply use the commands:
 Test the Installation
 ---------------------
 
-Instead of using the Teiid Designer, the install.sh script follows step 2 option 2
-in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
+Instead of using the Teiid Designer, the install.sh script follows step 2
+option 2 in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
 The install.sh script uses an EAP command-line interface script to
 deploy the necessary resource adapters and register them with JNDI.
@@ -81,5 +84,57 @@ The URL follows the pattern:
     http://<server>:<port>/<vdb-name>/<model>.<table>
 
 The optional format directive renders the output as json.  For the above
-URLs, the file model will have data and accumulo will be empty.
+URLs, the file model will have data and the accumulo model will be empty.
+
+Enable SQuirreL Client for Teiid
+--------------------------------
+
+Launch the SQuirreL SQL client using the command:
+
+    testing/squirrel-sql-3.5.3/squirrel-sql.sh
+
+On the main window, click the "Drivers" tab along the left hand side.
+Click the "+" icon to add a new driver.
+
+On the "Add Driver" dialog, put the following values in the named fields:
+
+    Name:  Teiid Driver
+    Example URL:  jdbc:teiid:babynames@mm://localhost:31000
+
+The pattern for Teiid database connection strings is:
+
+    jdbc:teiid:<vdb-name>@mm[s]://<host>:<port>;[prop-name=prop-value;]*
+
+On the same dialog, select the "Extra Class Path" tab and click the
+"Add" button.  Browse to the Teiid driver at:
+
+    <install-dir>/testing/squirrel-sql-3.5.3/lib/teiid-client-8.8.0.Final.jar
+
+Next, click on the "List Drivers" button to populate the "Class Name"
+field then press "OK".  In the status window, you should see that the
+driver was successfully registered.
+
+Populate the Accumulo Store
+---------------------------
+
+With SQuirrel SQL client running, import the babynames data into the
+Accumulo store.  To do this, click on the "Aliases" tab on the left
+hand side and then click "+" to create a new alias.  Set the fields to
+the following:
+
+    Name:  babynames
+    Driver:  Teiid Driver
+    URL:  jdbc:teiid:babynames@mm://localhost:31000
+    User Name:  user
+    Password:  user1jboss!
+
+Leave the other defaults and press OK then press "Connect".
+
+Select the "SQL" tab and type the following SQL statement to populate
+the accumulo data store:
+
+    insert into accumulo.babies (id, name, state, gender, birthyear, occurences)  
+    select f.id, f.name, f.state, f.gender, f.birthyear, f.occurences from file.babies as f;
+
+Click the running man icon to execute the SQL statement.
 

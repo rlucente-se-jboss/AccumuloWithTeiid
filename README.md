@@ -15,8 +15,8 @@ Specifically, this now uses:
 * Teiid 8.8.0 (with RestEasy 2.3.6 Patch)
 * Zookeeper 3.4.6
 
-Install Accumulo and Launch
----------------------------
+Install Accumulo Infrastructure
+-------------------------------
 
 Accumulo requires a larger number of open files than the
 normal default.  To enable this, create a file called
@@ -47,21 +47,29 @@ the install.sh script.  To install:
     ./clean.sh
     ./install.sh
 
-Wait for a console message stating that accumulo-babies-vdb.xml has
-been deployed.
-
-To start and stop Accumulo after it is installed, simply use the commands:
+To start and stop all the tooling after it is installed, simply use
+the commands:
 
     ./start.sh
     ./stop.sh
 
+Setup the SSA Dataset Demo
+--------------------------
+
+To install the models for the sample dataset, execute the script:
+
+    ./setup-demo.sh
+
+Wait for a console message stating that accumulo-babies-vdb.xml has
+been deployed.
+
 Test the Installation
 ---------------------
 
-Instead of using the Teiid Designer, the install.sh script follows step 2
-option 2 in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
+Instead of using the Teiid Designer, the setup-demo.sh script follows
+step 2 option 2 in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
-The install.sh script uses an EAP command-line interface script to
+The setup-demo.sh script uses an EAP command-line interface script to
 deploy the necessary resource adapters and register them with JNDI.
 It then deploys a dynamic vdb enabling access to both the file view
 and the accumulo view.  A Teiid user is configured in the application
@@ -71,7 +79,7 @@ security realm with the name and password of:
 
 This user has both the user and the odata roles so the odata server
 features of Teiid can be used to confirm that everything is working
-properly.  To do this, open Firefox and browse to the URLs:
+properly.  To do this, browse to the URLs:
 
     http://localhost:8080/babynames/file.babies?$format=json
     http://localhost:8080/babynames/accumulo.babies?$format=json

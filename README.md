@@ -15,6 +15,14 @@ Specifically, this now uses:
 * Teiid 8.8.0 (with RestEasy 2.3.6 Patch)
 * Zookeeper 3.4.6
 
+Prerequisites
+-------------
+
+Review the README.txt files in both the dist and datasources directory
+to ensure that all binaries and data files are present.  Also, make sure
+that the DATASETS variable in the demo.conf file contains the compressed
+data files in the datasources directory.
+
 Install Accumulo Infrastructure
 -------------------------------
 
@@ -45,13 +53,14 @@ data virtualization, accumulo, and zookeeper in the same directory as
 the install.sh script.  To install:
 
     ./clean.sh
-    ./install.sh
+    ./install-accumulo.sh
 
-To start and stop all the tooling after it is installed, simply use
-the commands:
+Install EAP and Teiid
+---------------------
 
-    ./start.sh
-    ./stop.sh
+Run the command to install EAP and Teiid and apply various patches:
+
+    ./install-eap-teiid.sh
 
 Setup the SSA Dataset Demo
 --------------------------
@@ -63,30 +72,40 @@ To install the models for the sample dataset, execute the script:
 Wait for a console message stating that accumulo-babies-vdb.xml has
 been deployed.
 
+Start/Stop the Demo
+-------------------
+
+To start and stop all the tooling after it is installed, simply use
+the commands:
+
+    ./start.sh
+    ./stop.sh
+
 Test the Installation
 ---------------------
 
 Instead of using the Teiid Designer, the setup-demo.sh script follows
-step 2 option 2 in the [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
+step 2 option 2 in this [article](https://community.jboss.org/wiki/ApacheAccumuloWithTeiid).
 
-The setup-demo.sh script uses an EAP command-line interface script to
+The setup-demo.sh script uses EAP command-line interface scripts to
 deploy the necessary resource adapters and register them with JNDI.
-It then deploys a dynamic vdb enabling access to both the file view
-and the accumulo view.  A Teiid user is configured in the application
-security realm with the name and password of:
+It also deploys any dynamic vdbs.  A Teiid user is configured in the
+application security realm with the name and password of:
 
     user/user1jboss!
 
 This user has both the user and the odata roles so the odata server
 features of Teiid can be used to confirm that everything is working
-properly.  To do this, browse to the URLs:
+properly.
 
-    http://localhost:8080/babynames/file.babies?$format=json
-    http://localhost:8080/babynames/accumulo.babies?$format=json
+Browse to the following URLs to see the demo data:
+
+    http://localhost:8080/odata/babynames/file.babies?$format=json
+    http://localhost:8080/odata/babynames/accumulo.babies?$format=json
 
 The URL follows the pattern:
 
-    http://<server>:<port>/<vdb-name>/<model>.<table>
+    http://<server>:<port>/odata/<vdb-name>/<model>.<table>
 
 The optional format directive renders the output as json.  For the above
 URLs, the file model will have data and the accumulo model will be empty.

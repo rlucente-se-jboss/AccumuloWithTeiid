@@ -23,58 +23,29 @@ function wait_for_eap_start() {
 
 PUSHD ${WORK_DIR}
 
-    # expand the dataset to be imported
+    # expand datasets to be imported
     mkdir -p importdata
-    PUSHD importdata
-        unzip -q ${DIST_DIR}/namesbystate.zip
-    POPD
+    for data in ${DATASETS[*]}
+    do
+        unzip -q $data -d importdata
+    done
 
-    # launch EAP and setup the datasources
-    testing/jboss-eap-${VER_EAP_INST}/bin/standalone.sh -c standalone-teiid.xml &
+    # start infrastructure
+    ./start.sh
     wait_for_eap_start
 
-    testing/jboss-eap-${VER_EAP_INST}/bin/jboss-cli.sh -c --file=${WORK_DIR}/setup-file-and-accumulo-ds.cli
-    sleep 5
+    # run CLI scripts to setup the datasources
+    for script in `ls datasources/*.cli`
+    do
+        testing/jboss-eap-${VER_EAP_INST}/bin/jboss-cli.sh -c --file=$script
+        sleep 5
+    done
 
-    # create the dynamic vdb
-    cat > accumulo-babies-vdb.xml <<EOF8
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>  
-<vdb name="babynames" version="1">  
-    <model name="accumulo">  
-        <source name="node1" translator-name="accumulo" connection-jndi-name="java:/accumulo-ds" />  
-        <metadata type="DDL"><![CDATA[          
-            CREATE FOREIGN TABLE babies ( 
-                  id integer PRIMARY KEY OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'id'), 
-                  name varchar(25) OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'name'), 
-                  state varchar(25) OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'state'), 
-                  gender char(1) OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'gender'), 
-                  birthyear integer OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'birthyear'), 
-                  occurences integer OPTIONS (SEARCHABLE 'All_Except_Like', "teiid_accumulo:CF" 'occurences') 
-            ) OPTIONS (UPDATABLE TRUE) 
-            ]]>  
-        </metadata>  
-    </model>  
-    <model name="file_source">  
-        <source name="file" translator-name="file" connection-jndi-name="java:/file-ds" />  
-    </model>  
-    <model name="file" visible="true" type="VIRTUAL">  
-        <metadata type="DDL"><![CDATA[          
-            CREATE VIEW babies (id integer PRIMARY KEY, 
-                                name varchar(25),            
-                                state varchar(25), 
-                                gender char(1), 
-                                birthyear integer, 
-                                occurences integer 
-            ) AS SELECT ROW_NUMBER() OVER (ORDER BY A.state) as id , A.name, A.state, A.gender, A.birthyear,  A.occurences FROM 
-            (EXEC file_source.getTextFiles('VA.TXT')) AS f,              
-            TEXTTABLE(f.file COLUMNS state string, gender char, birthyear integer, name string, occurences integer) AS A;     
-            ]]>  
-        </metadata>  
-    </model>  
-</vdb>
-EOF8
-
-    # deploy the vdb
-    mv accumulo-babies-vdb.xml testing/jboss-eap-${VER_EAP_INST}/standalone/deployments
-    touch testing/jboss-eap-${VER_EAP_INST}/standalone/deployments/accumulo-babies-vdb.xml.dodeploy
+    # deploy dynamic vdbs
+    for vdb in `ls datasources/*-vdb.xml`
+    do
+        vdb_basename=`basename ${vdb}`
+        cp $vdb testing/jboss-eap-${VER_EAP_INST}/standalone/deployments
+        touch testing/jboss-eap-${VER_EAP_INST}/standalone/deployments/${vdb_basename}.dodeploy
+    done
 POPD

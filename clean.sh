@@ -13,5 +13,5 @@ then
 fi
 
 # clean up installation
-rm -fr testing importdata
+rm -fr testing importdata *.out
 

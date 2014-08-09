@@ -20,8 +20,8 @@ Prerequisites
 
 Review the README.txt files in both the dist and datasources directory
 to ensure that all binaries and data files are present.  Also, make sure
-that the DATASETS variable in the demo.conf file contains the compressed
-data files in the datasources directory.
+that the DATASETS variable in the demo.conf file contains a list of the
+compressed data files in the datasources directory.
 
 Install Accumulo Infrastructure
 -------------------------------
